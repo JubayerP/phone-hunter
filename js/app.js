@@ -6,7 +6,7 @@ const loadPhones = async (name, dataLimit) => {
 };
 
 const displayPhones = (phones, dataLimit) => {
-  console.log(dataLimit);
+  // console.log(dataLimit);
   const phoneContainer = document.getElementById("phone-container");
   phoneContainer.textContent = ``;
 
@@ -40,7 +40,7 @@ const displayPhones = (phones, dataLimit) => {
                 Some quick example text to build on the card title and make up the bulk of the card's
                 content.
                 </p>
-                <button onclick="loadPhoneDetails('${phone.slug}')" type="button" class=" inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out">Show Details</button>
+                <button onclick="loadPhoneDetails('${phone.slug}')" type="button" class=" inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Show Details</button>
             </div>
             </div>
         </div>
@@ -62,6 +62,12 @@ document.getElementById("btn-search").addEventListener("click", function () {
   processSearch(10);
 });
 
+document.getElementById('search-field').addEventListener('keypress', function (e) {
+  if (e.key === 'Enter') {
+    processSearch(10);
+  }
+})
+
 const toggleSpinner = (isLoading) => {
   const loader = document.getElementById("loader");
   if (isLoading) {
@@ -75,8 +81,21 @@ document.getElementById('btn-show-all').addEventListener('click', function () {
   processSearch();
 })
 
-const loadPhoneDetails = id => {
-  
+const loadPhoneDetails = async id => {
+  const url = `https://openapi.programming-hero.com/api/phone/${id}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  displayPhoneDetails(data.data);
+};
+
+const displayPhoneDetails = phone => {
+  console.log(phone);
+  const modalTitle = document.getElementById('exampleModalLabel');
+  modalTitle.innerText = phone.name;
+  const phoneDetails = document.getElementById('phone-details');
+  phoneDetails.innerHTML = `
+    <p>Release Date: ${phone.releaseDate ? phone.releaseDate : 'No Release Date Found!'}</p>
+  `
 }
 
 loadPhones('apple');
